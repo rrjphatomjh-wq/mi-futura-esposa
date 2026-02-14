@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carta</title>
+
+<style>
+:root{
+  --accent:#e10600;
+  --soft:#fdf2f2;
+  --glass:rgba(0,0,0,.04);
+  --border:rgba(0,0,0,.08);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  height:100vh;
+  font-family:'Inter',sans-serif;
+  background:#ffffff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  color:#111;
+}
+
+/* Detalles decorativos rojos */
+.decor-top{
+  position:absolute;
+  top:80px;
+  right:120px;
+  font-size:40px;
+  color:var(--accent);
+  transform:rotate(15deg);
+  opacity:.9;
+}
+
+.decor-bottom{
+  position:absolute;
+  bottom:120px;
+  left:120px;
+  font-size:50px;
+  color:var(--accent);
+  transform:rotate(-20deg);
+  opacity:.8;
+}
+
+/* Flecha */
+.back{
+  position:absolute;
+  top:30px;
+  left:30px;
+  font-size:26px;
+  text-decoration:none;
+  color:#333;
+  opacity:.6;
+  transition:.3s;
+}
+
+.back:hover{
+  opacity:1;
+  transform:translateX(-6px);
+}
+
+/* Sobre */
+.envelope{
+  position:relative;
+  width:360px;
+  height:230px;
+  cursor:pointer;
+  perspective:1600px;
+  z-index:2;
+}
+
+.env-body{
+  position:absolute;
+  inset:0;
+  border-radius:24px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  box-shadow:0 20px 40px rgba(0,0,0,.08);
+}
+
+.flap{
+  position:absolute;
+  width:100%;
+  height:60%;
+  border-radius:24px 24px 0 0;
+  background:linear-gradient(145deg, rgba(0,0,0,.06), rgba(0,0,0,.02));
+  border:1px solid var(--border);
+  border-bottom:none;
+  transform-origin:top;
+  transition:transform .8s ease;
+}
+
+.envelope.open .flap{
+  transform:rotateX(170deg);
+}
+
+/* Carta */
+.letter{
+  position:absolute;
+  width:90%;
+  height:200px;
+  border-radius:18px;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-20%);
+  padding:25px;
+  opacity:0;
+  transition:.8s ease;
+  text-align:center;
+  box-shadow:0 15px 30px rgba(0,0,0,.08);
+  border:1px solid #f3f3f3;
+
+  background:
+    linear-gradient(#f3f3f3 1px, transparent 1px),
+    linear-gradient(90deg, #f3f3f3 1px, transparent 1px);
+  background-size: 25px 25px;
+  background-color: #ffffff;
+}
+
+.envelope.open .letter{
+  transform:translate(-50%,-130%);
+  opacity:1;
+}
+
+.letter h3{
+  margin-bottom:10px;
+  font-weight:600;
+}
+
+.letter p{
+  font-size:14px;
+  line-height:1.6;
+  color:#444;
+}
+
+/* Corazón */
+.heart-center{
+  font-size:26px;
+  color:var(--accent);
+  margin-bottom:10px;
+  animation:beat 1.5s infinite;
+  position:relative;
+  display:inline-block;
+}
+
+@keyframes beat{
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.15); }
+}
+
+/* Chispas */
+.spark{
+  position:absolute;
+  color:var(--accent);
+  font-size:12px;
+  animation:floatUp 1.2s ease-out forwards;
+  pointer-events:none;
+}
+
+@keyframes floatUp{
+  0%{ opacity:1; transform:translate(0,0) scale(1); }
+  100%{ opacity:0; transform:translate(var(--x), -40px) scale(0.5); }
+}
+
+/* Lightbox */
+.lightbox{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  pointer-events:none;
+  transition:.5s ease;
+  z-index:999;
+}
+
+.lightbox.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.lightbox img{
+  max-width:85%;
+  max-height:85vh;
+  border-radius:20px;
+  transform:scale(.8);
+  transition:.5s ease;
+  box-shadow:0 30px 80px rgba(0,0,0,.5);
+}
+
+.lightbox.show img{
+  transform:scale(1);
+}
+
+/* ✨ EFECTO ESPECIAL SEGUNDA FOTO */
+.special-effect{
+  animation:romanticReveal 1s ease;
+}
+
+@keyframes romanticReveal{
+  0%{
+    transform:scale(0.6) rotate(-8deg);
+    filter:brightness(2);
+    opacity:0;
+  }
+  50%{
+    transform:scale(1.1) rotate(3deg);
+    filter:brightness(1.4);
+  }
+  100%{
+    transform:scale(1) rotate(0);
+    filter:brightness(1);
+    opacity:1;
+  }
+}
+
+/* Snoopy */
+.snoopy{
+  position:fixed;
+  bottom:40px;
+  left:-120px;
+  width:110px;
+  animation:walk 18s linear infinite;
+  z-index:1;
+  opacity:.95;
+}
+
+@keyframes walk{
+  from{ left:-120px; }
+  to{ left:110%; }
+}
+</style>
+</head>
+
+<body>
+
+<a href="{{ url_for('index') }}" class="back">←</a>
+
+<div class="decor-top">❥</div>
+<div class="decor-bottom">❤</div>
+
+<img src="{{ url_for('static', filename='img/snoopy-walk.gif') }}" class="snoopy">
+
+<div class="envelope" id="sobre">
+  <div class="env-body"></div>
+  <div class="flap"></div>
+
+  <div class="letter">
+    <div class="heart-center" id="heart">❤</div>
+    <h3>Para ti</h3>
+    <p>
+      Hay cosas que no se explican…<br><br>
+      solo se sienten.
+    </p>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <img id="lightbox-img" src="{{ url_for('static', filename='img/foto.jpg') }}">
+</div>
+
+<script>
+const sobre = document.getElementById("sobre");
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightbox-img");
+const heart = document.getElementById("heart");
+
+let imageStep = 1;
+
+sobre.addEventListener("click", () => {
+  sobre.classList.add("open");
+
+  setTimeout(() => {
+    lightbox.classList.add("show");
+  }, 1000);
+});
+
+lightbox.addEventListener("click", () => {
+
+  if(imageStep === 1){
+
+    lightboxImg.classList.remove("special-effect");
+    void lightboxImg.offsetWidth; // reinicia animación
+
+    lightboxImg.src = "{{ url_for('static', filename='img/fotocarta2.jpg') }}";
+    lightboxImg.classList.add("special-effect");
+
+    imageStep = 2;
+
+  } else {
+    lightbox.classList.remove("show");
+  }
+
+});
+
+/* Chispas */
+setInterval(() => {
+  const spark = document.createElement("span");
+  spark.classList.add("spark");
+  spark.innerHTML = "❤";
+
+  const randomX = (Math.random() * 40 - 20) + "px";
+  spark.style.setProperty("--x", randomX);
+
+  heart.appendChild(spark);
+
+  setTimeout(() => {
+    spark.remove();
+  }, 1200);
+
+}, 500);
+</script>
+
+</body>
+</html>

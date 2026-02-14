@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nuestra Canción</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+body{
+  height:100vh;
+  background:linear-gradient(180deg,#1c1c1e,#2c2c2e);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  overflow:hidden;
+  transition:background .6s ease;
+}
+
+/* Oscurecer fondo */
+body.dark{
+  background:linear-gradient(180deg,#000000,#111111);
+}
+
+/* Flecha volver */
+.back{
+  position:absolute;
+  top:30px;
+  left:30px;
+  font-size:26px;
+  text-decoration:none;
+  color:white;
+  opacity:.6;
+  transition:.3s;
+}
+
+.back:hover{
+  opacity:1;
+  transform:translateX(-6px);
+}
+
+/* Contenedor glass más transparente */
+.player{
+  width:360px;
+  padding:35px 25px;
+  border-radius:30px;
+  text-align:center;
+
+  background:rgba(255,255,255,.05);
+  backdrop-filter:blur(30px);
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 30px 60px rgba(0,0,0,.7);
+  transition:.4s ease;
+}
+
+/* Portada */
+.cover-wrapper{
+  position:relative;
+  width:300px;
+  margin:auto;
+}
+
+.cover{
+  width:300px;
+  height:300px;
+  object-fit:cover;
+  border-radius:20px;
+  box-shadow:0 20px 40px rgba(0,0,0,.7);
+  transition:.4s;
+}
+
+.cover.animate{
+  transform:scale(1.05);
+}
+
+/* Corazón sobre imagen */
+.overlay-heart{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) scale(.5);
+  font-size:70px;
+  color:white;
+  opacity:0;
+  transition:.4s ease;
+}
+
+.overlay-heart.show{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+}
+
+/* Texto */
+.song-title{
+  margin-top:25px;
+  font-size:22px;
+  font-weight:600;
+  letter-spacing:.5px;
+  opacity:0;
+  transform:translateY(10px);
+  animation:fadeIn 1.2s ease forwards;
+}
+
+@keyframes fadeIn{
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.song-sub{
+  margin-top:6px;
+  font-size:16px;
+  opacity:.75;
+}
+
+/* Barra progreso */
+.progress-container{
+  margin-top:25px;
+}
+
+.progress{
+  width:100%;
+  height:4px;
+  background:rgba(255,255,255,.25);
+  border-radius:10px;
+  position:relative;
+}
+
+.progress-fill{
+  width:35%;
+  height:100%;
+  background:white;
+  border-radius:10px;
+}
+
+.time{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  opacity:.6;
+  margin-top:6px;
+}
+
+/* Controles */
+.controls{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:40px;
+  margin-top:35px;
+  font-size:28px;
+}
+
+.play{
+  font-size:45px;
+  cursor:pointer;
+  transition:.3s;
+}
+
+.play:hover{
+  transform:scale(1.1);
+}
+
+.footer{
+  margin-top:30px;
+  font-size:13px;
+  opacity:.5;
+}
+
+</style>
+</head>
+
+<body>
+
+<a href="{{ url_for('index') }}" class="back">←</a>
+
+<div class="player">
+
+  <div class="cover-wrapper">
+    <img src="{{ url_for('static', filename='img/nosotros.jpg') }}" 
+         class="cover" id="cover">
+
+    <div class="overlay-heart" id="heartOverlay">❤</div>
+  </div>
+
+  <div class="song-title">Un círculo sin fin 💍</div>
+  <div class="song-sub">La Distancia</div>
+
+  <div class="progress-container">
+    <div class="progress">
+      <div class="progress-fill"></div>
+    </div>
+    <div class="time">
+      <span>1:27</span>
+      <span>-1:28</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <span>⏮</span>
+    <span class="play" id="playBtn">▶</span>
+    <span>⏭</span>
+  </div>
+
+  <div class="footer">
+    Manuel Medrano
+  </div>
+
+</div>
+
+<script>
+const playBtn = document.getElementById("playBtn");
+const cover = document.getElementById("cover");
+const heartOverlay = document.getElementById("heartOverlay");
+
+playBtn.addEventListener("click", () => {
+
+  document.body.classList.add("dark");
+
+  cover.classList.add("animate");
+
+  heartOverlay.classList.add("show");
+
+  playBtn.innerHTML = "❤";
+
+  setTimeout(() => {
+    heartOverlay.classList.remove("show");
+  }, 1000);
+
+  setTimeout(() => {
+    window.open(
+      "https://open.spotify.com/intl-es/track/0LpEr3qpmDQ1gEabnsQlGC?si=0de6d4e596cd4c31",
+      "_blank"
+    );
+  }, 1100);
+
+});
+</script>
+
+</body>
+</html>
