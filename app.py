@@ -1,19 +1,36 @@
-from flask import Flask, render_template
-
-app = Flask(__name__)
-
-# Página principal
-@app.route("/")
-def index():
-    return render_template("index.html")
 from flask import Flask, render_template, request
 import sqlite3
 import requests
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 
-# Crear base de datos si no existe
+# ==============================
+# CONFIGURACIÓN TELEGRAM
+# ==============================
+
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
+CHAT_ID = os.environ.get("CHAT_ID")
+
+
+def enviar_telegram(mensaje):
+    if TELEGRAM_TOKEN and CHAT_ID:
+        url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+        data = {
+            "chat_id": CHAT_ID,
+            "text": mensaje
+        }
+        try:
+            requests.post(url, data=data)
+        except:
+            pass
+
+
+# ==============================
+# BASE DE DATOS
+# ==============================
+
 def init_db():
     conn = sqlite3.connect("visitas.db")
     c = conn.cursor()
@@ -32,14 +49,19 @@ def init_db():
 
 init_db()
 
-# Ruta principal
+
+# ==============================
+# RUTA PRINCIPAL
+# ==============================
+
 @app.route("/")
 def home():
+    # Obtener IP real en Render
     ip = request.headers.get("X-Forwarded-For", request.remote_addr)
 
-    # Obtener geolocalización
+    # Geolocalización
     try:
-        geo = requests.get(f"http://ip-api.com/json/{ip}").json()
+        geo = requests.get(f"http://ip-api.com/json/{ip}", timeout=5).json()
         pais = geo.get("country", "Desconocido")
         ciudad = geo.get("city", "Desconocido")
     except:
@@ -59,8 +81,25 @@ def home():
     conn.commit()
     conn.close()
 
+    # Mensaje para Telegram
+    mensaje = f"""
+🚨 NUEVA VISITA 🚨
+
+🌍 IP: {ip}
+🌎 País: {pais}
+🏙 Ciudad: {ciudad}
+🕒 Fecha: {fecha}
+📱 Dispositivo: {user_agent}
+"""
+
+    enviar_telegram(mensaje)
+
     return render_template("index.html")
 
+
+# ==============================
+# OTRAS RUTAS
+# ==============================
 
 @app.route("/carta")
 def carta():
@@ -72,7 +111,10 @@ def cancion():
     return render_template("cancion.html")
 
 
-# PANEL SECRETO
+# ==============================
+# PANEL ADMIN
+# ==============================
+
 @app.route("/admin")
 def admin():
     conn = sqlite3.connect("visitas.db")
@@ -83,6 +125,10 @@ def admin():
 
     return render_template("admin.html", visitas=datos)
 
+
+# ==============================
+# INICIO
+# ==============================
 
 if __name__ == "__main__":
     app.run(debug=True)
